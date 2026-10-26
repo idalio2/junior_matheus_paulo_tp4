@@ -27,4 +27,4 @@ O modelo precisa de atributos numéricos. O CountVectorizer cria um vocabulário
 
 API da equipe que será utilizada como alvo autorizado nas atividades de pentest do TP4/TP5:
 
-**URL/IP:** `A_DEFINIR`
+**URL/IP:** https://comics-adapted-mpegs-objects.trycloudflare.com

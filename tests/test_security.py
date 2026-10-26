@@ -18,7 +18,7 @@ def obter_token(username: str, password: str) -> str:
     assert resposta.status_code == 200
     return resposta.json()["access_token"]
 
-
+# Teste autenticação
 def test_autenticacao_com_credenciais_validas_e_invalidas():
     resposta_valida = client.post(
         "/auth/token",
@@ -43,7 +43,7 @@ def test_autenticacao_com_credenciais_validas_e_invalidas():
     assert resposta_invalida.status_code == 401
     assert resposta_invalida.json()["detail"] == "Usuário ou senha inválidos"
 
-
+# Teste rota protegida
 def test_acesso_sem_token():
     resposta = client.post(
         "/predict",
@@ -53,7 +53,7 @@ def test_acesso_sem_token():
     assert resposta.status_code == 401
     assert resposta.json()["detail"] == "Not authenticated"
 
-
+#Teste Autorização/BOLA
 def test_usuario_nao_acessa_recurso_de_outro_usuario():
     token = obter_token("usuario2", "teste123")
 
@@ -65,7 +65,7 @@ def test_usuario_nao_acessa_recurso_de_outro_usuario():
     assert resposta.status_code == 404
     assert resposta.json()["detail"] == "Prediction não encontrada"
 
-
+#Teste validação de entrada
 def test_campo_extra_e_rejeitado():
     token = obter_token("admin", "infnet")
 
@@ -81,7 +81,7 @@ def test_campo_extra_e_rejeitado():
     assert resposta.status_code == 422
     assert resposta.json()["detail"][0]["type"] == "extra_forbidden"
 
-
+#Teste Rate Limiting
 def test_rate_limit_bloqueia_apos_10_requisicoes():
     for _ in range(10):
         resposta = client.post(

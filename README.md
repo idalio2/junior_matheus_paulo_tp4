@@ -10,6 +10,15 @@ O TP2 reuniu a análise exploratória completa dos dados e uma API FastAPI com p
 
 O TP3 consolida o projeto: o notebook ganha uma regressão linear com análise de resíduos e a formalização do problema de classificação; a API passa a ter testes de segurança executados no GitHub Actions, rotas documentadas em `/docs` e uma auditoria final com OWASP ZAP; e o planejamento da próxima etapa fica em `others/planejamento.md`.
 
+## Onde está cada exercício do TP3
+
+1. Regressão linear e análise do modelo: seção 9 de `eda/eda_tp3.ipynb`.
+2. Formalização do problema de classificação: seção 10 de `eda/eda_tp3.ipynb`.
+3. Testes automatizados de segurança: `tests/test_security.py`.
+4. Integração dos testes com GitHub Actions: `.github/workflows/testes.yml`.
+5. Auditoria final com OWASP ZAP: `zap/scan_passivo_zap_TP3.md` e `zap/relatorio_zap_TP3.html`. A documentação das rotas em `/docs` está em `fastapi/routes/` e `fastapi/main.py`.
+6. Planejamento do modelo de classificação e do teste adversarial: `others/planejamento.md`, incluindo a URL da API da equipe.
+
 ## Estrutura
 
 ```text

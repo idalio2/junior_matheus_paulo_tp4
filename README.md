@@ -1,4 +1,4 @@
-# Projeto de Bloco - TP2
+# Projeto de Bloco - TP3
 
 Projeto desenvolvido por Junior, Matheus e Paulo para a disciplina Projeto de Bloco do curso de Análise e Segurança de Agentes de IA do Instituto Infnet.
 
@@ -6,22 +6,26 @@ Projeto desenvolvido por Junior, Matheus e Paulo para a disciplina Projeto de Bl
 
 O projeto utiliza o [Customer Support Ticket Dataset](https://www.kaggle.com/datasets/suraj520/customer-support-ticket-dataset) como base para um sistema de atendimento ao cliente. A variável `Ticket Type` representa a intenção do usuário e `Ticket Description` é o texto usado como entrada.
 
-O TP2 reúne a análise exploratória completa dos dados e uma API FastAPI com persistência em SQLite, autenticação JWT, controle de acesso por proprietário, validação de entrada, rate limiting e headers HTTP de segurança.
+O TP2 reuniu a análise exploratória completa dos dados e uma API FastAPI com persistência em SQLite, autenticação JWT, controle de acesso por proprietário, validação de entrada, rate limiting e headers HTTP de segurança.
+
+O TP3 consolida o projeto: o notebook ganha uma regressão linear com análise de resíduos e a formalização do problema de classificação; a API passa a ter testes de segurança executados no GitHub Actions, rotas documentadas em `/docs` e uma auditoria final com OWASP ZAP; e o planejamento da próxima etapa fica em `others/planejamento.md`.
 
 ## Estrutura
 
 ```text
+.github/workflows/testes.yml  Pipeline de CI com os testes
 data/                         Dataset em CSV
-eda/                          Notebook com o EDA completo
+eda/eda_tp3.ipynb             Notebook com o EDA completo do TP1, TP2 e TP3
 fastapi/
   main.py                     Entrada da aplicação
   database.db                 Banco SQLite com dados de exemplo
-  sqlite_database.py          Criação e população do banco
+  sqlite_database.py          Criação das tabelas e população inicial do banco
+  sqlite_populate.py          População do banco com os dados de exemplo
   models/                     Modelos Pydantic e SQLModel
   routes/                     Rotas da API
   security/                   JWT, senhas e rate limiting
-others/                       DFD da API
-tests/                        Testes automatizados
+others/                       DFD da API e planejamento da próxima etapa
+tests/                        Testes automatizados de segurança
 zap/                          Relatório e análise do scan passivo
 ```
 
@@ -66,6 +70,13 @@ cd fastapi
 python sqlite_database.py --recriar
 ```
 
+O `sqlite_database.py` cria as tabelas e chama `sqlite_populate.py` para inserir os dados de exemplo. Para popular novamente um banco já existente:
+
+```bash
+cd fastapi
+python sqlite_populate.py
+```
+
 O banco contém dois usuários e predictions pertencentes a proprietários diferentes. As senhas são armazenadas com PBKDF2-SHA256.
 
 | Usuário | Senha |
@@ -83,7 +94,7 @@ Dentro de `fastapi/`, execute:
 uvicorn main:app --reload
 ```
 
-A documentação interativa fica disponível em `http://127.0.0.1:8000/docs`.
+A documentação interativa fica disponível em `http://127.0.0.1:8000/docs`. Cada rota possui descrição, corpo ou parâmetros esperados, respostas possíveis e indicação de autenticação. As rotas protegidas podem ser testadas pelo botão **Authorize**.
 
 ### Rotas principais
 
@@ -113,14 +124,18 @@ O endpoint de autenticação aceita no máximo dez requisições por minuto por 
 Na raiz do projeto, execute:
 
 ```bash
-pytest -q
+pytest tests/ -v
 ```
 
 Os testes usam um banco temporário e cobrem:
 
+- autenticação com credenciais válidas e inválidas;
 - tentativa de acessar `/predict` sem token;
-- tentativa de acessar uma prediction de outro usuário;
-- envio de campo extra no corpo da requisição.
+- tentativa de acessar uma prediction de outro usuário (BOLA);
+- envio de campo extra no corpo da requisição;
+- bloqueio por rate limiting após 10 requisições por minuto em `/auth/token`.
+
+O workflow `.github/workflows/testes.yml` executa a mesma suíte no GitHub Actions a cada push e falha caso algum teste falhe.
 
 ## EDA
 
@@ -128,14 +143,18 @@ Para abrir o notebook:
 
 ```bash
 cd eda
-jupyter notebook customer_support_tickets_eda.ipynb
+jupyter notebook eda_tp3.ipynb
 ```
 
-O notebook contém inspeção, qualidade, limpeza, análises univariada e multivariada, correlações, associações categóricas, outliers, dois testes de hipótese Mann-Whitney e conclusões.
+O notebook contém inspeção, qualidade, limpeza, análises univariada e multivariada, correlações, associações categóricas, outliers, dois testes de hipótese Mann-Whitney e conclusões. No TP3, foram adicionadas a regressão linear com R², RMSE, Residual Plot e Q-Q Plot (seção 9) e a formalização do problema de classificação (seção 10).
 
 ## OWASP ZAP
 
-Os artefatos do scan passivo ficam em `zap/`. O primeiro scan encontrou quatro findings Medium na documentação Swagger. Todos foram corrigidos e o scan final terminou sem findings Medium ou High. O arquivo `scan_passivo_zap.md` registra os findings, as correções e a validação.
+Os artefatos do scan passivo ficam em `zap/`. A auditoria final do TP3 cobriu todas as rotas da API e a documentação `/docs`, e não encontrou findings Medium ou High. O arquivo `scan_passivo_zap_TP3.md` registra a execução, o resultado e como reproduzir o scan; o relatório exportado é `relatorio_zap_TP3.html`.
+
+## Planejamento
+
+O arquivo `others/planejamento.md` define o modelo candidato, a representação do texto com CountVectorizer e o alvo autorizado para o teste adversarial do TP4/TP5.
 
 ## DFD
 

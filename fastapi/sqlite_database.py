@@ -3,7 +3,7 @@ import os
 import sqlite3
 from pathlib import Path
 
-from security.senhas import gerar_hash_senha
+from sqlite_populate import popular_banco
 
 
 BASE_DIR = Path(__file__).resolve().parent
@@ -42,32 +42,7 @@ def criar_banco(recriar: bool = False):
         """
     )
 
-    usuarios = [
-        (1, "admin", gerar_hash_senha("infnet")),
-        (2, "usuario2", gerar_hash_senha("teste123")),
-    ]
-
-    cursor.executemany(
-        """
-        INSERT INTO users (id, username, password_hash)
-        VALUES (?, ?, ?)
-        ON CONFLICT(username) DO UPDATE SET password_hash=excluded.password_hash
-        """,
-        usuarios,
-    )
-
-    predictions = [
-        (1, "Quero meu dinheiro de volta", "Refund request", 1),
-        (2, "Meu produto ainda não chegou", "Delivery issue", 2),
-    ]
-
-    cursor.executemany(
-        """
-        INSERT OR IGNORE INTO predictions (id, texto, intencao, owner_id)
-        VALUES (?, ?, ?, ?)
-        """,
-        predictions,
-    )
+    popular_banco(conexao)
 
     conexao.commit()
     conexao.close()

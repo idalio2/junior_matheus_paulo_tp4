@@ -18,6 +18,15 @@ router = APIRouter()
 @router.post(
     "/predict",
     response_model=SaidaPredicao,
+    summary="Prevê a intenção de uma mensagem",
+    description=(
+        "Recebe o texto de uma mensagem de atendimento e registra a prediction "
+        "para o usuário autenticado. Exige token Bearer. "
+        "Enquanto o modelo não é treinado, a intenção retornada é fixa."
+    ),
+    responses={
+        401: {"description": "Token ausente, inválido ou expirado"},
+    },
 )
 def prever_intencao(
         entrada: EntradaPredicao,
@@ -51,6 +60,15 @@ def prever_intencao(
 @router.get(
     "/predictions/{prediction_id}",
     response_model=PredictionPublica,
+    summary="Consulta uma prediction",
+    description=(
+        "Retorna uma prediction do usuário autenticado. Exige token Bearer. "
+        "Predictions de outros usuários não são retornadas."
+    ),
+    responses={
+        401: {"description": "Token ausente, inválido ou expirado"},
+        404: {"description": "Prediction não encontrada"},
+    },
 )
 def obter_prediction(
         prediction_id: int,

@@ -12,6 +12,10 @@ from security.rate_limit import limiter
 
 app = FastAPI(
     title="Sistema de Atendimento ao Cliente",
+    description=(
+        "As rotas protegidas exigem um token JWT do tipo Bearer. "
+        "Gere o token em `POST /auth/token` ou pelo botão **Authorize**."
+    ),
     docs_url=None,
     redoc_url=None,
 )

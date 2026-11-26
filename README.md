@@ -1,4 +1,4 @@
-# Projeto de Bloco - TP3
+# Projeto de Bloco - TP4
 
 Projeto desenvolvido por Junior, Matheus e Paulo para a disciplina Projeto de Bloco do curso de Análise e Segurança de Agentes de IA do Instituto Infnet.
 
@@ -168,3 +168,138 @@ O arquivo `others/planejamento.md` define o modelo candidato, a representação 
 ## DFD
 
 O diagrama de fluxo de dados está em `others/dfd_api.png`. O arquivo editável `others/dfd_api.drawio` também foi mantido no repositório.
+
+
+---
+
+## TP4 – Classificação de Intenções e Agente de IA
+
+O TP4 dá continuidade ao projeto desenvolvido nas etapas
+anteriores, integrando um modelo de classificação de
+intenções à API FastAPI e a um agente de atendimento
+utilizando o OpenAI Agents SDK.
+
+### Exercícios desenvolvidos
+
+1. Treinamento e avaliação do classificador de intenções.
+2. Integração do modelo à API FastAPI com autenticação JWT.
+3. Otimização de hiperparâmetros com GridSearchCV.
+4. Desenvolvimento do agente de atendimento com OpenAI Agents SDK.
+
+### Estrutura adicionada no TP4
+
+- `eda/classificacao_tp4.ipynb`: treinamento, avaliação e documentação.
+- `fastapi/ml/classificador.joblib`: pipeline treinado.
+- `fastapi/routes/classificacao.py`: endpoint de classificação.
+- `agente/agente_atendimento.py`: agente de atendimento.
+- `agente/requirements.txt`: dependências do agente.
+- `evidencias/tp4/`: evidências dos exercícios.
+
+### Resultados do modelo
+
+| Métrica | Baseline | LogisticRegression | GridSearchCV |
+|---|---:|---:|---:|
+| Acurácia | 20,72% | 19,48% | 19,48% |
+| F1-score Macro | 0,0687 | 0,1944 | 0,1944 |
+| ROC-AUC | 0,5000 | 0,4937 | 0,4937 |
+
+O GridSearchCV avaliou nove combinações de hiperparâmetros,
+utilizando validação cruzada com cinco folds.
+
+A melhor configuração encontrada foi C=1 e
+ngram_range=(1,1), equivalente à configuração original.
+
+Não houve ganho de desempenho com a otimização.
+
+### Instalação do TP4
+
+Recomendamos Python 3.12.
+
+Na pasta principal do projeto:
+
+```bash
+python3.12 -m venv .venv
+source .venv/bin/activate
+
+pip install -r eda/requirements.txt \
+            -r fastapi/requirements.txt \
+            -r agente/requirements.txt
+```
+
+### Executando a API
+
+```bash
+cd fastapi
+
+export JWT_SECRET="$(python -c 'import secrets; print(secrets.token_urlsafe(48))')"
+
+uvicorn main:app --reload
+```
+
+Documentação Swagger:
+
+http://127.0.0.1:8000/docs
+
+### Endpoint de classificação
+
+POST /classify
+
+Requer autenticação JWT.
+
+Exemplo de entrada:
+
+```json
+{
+  "texto": "I would like to cancel my subscription."
+}
+```
+
+A API retorna a intenção prevista e a probabilidade
+atribuída pelo modelo.
+
+### Executando o agente de atendimento
+
+Com a API em execução, abra outro terminal na pasta
+principal do projeto e ative o ambiente virtual.
+
+Configure a variável OPENAI_API_KEY com sua própria
+chave da API OpenAI.
+
+```bash
+source .venv/bin/activate
+
+read -rs "OPENAI_API_KEY?Cole sua chave OpenAI: "
+export OPENAI_API_KEY
+echo
+
+python agente/agente_atendimento.py
+```
+
+Os comandos acima utilizam o Zsh no macOS.
+Em outros sistemas, configure a variável de ambiente
+de acordo com o terminal utilizado.
+
+O agente solicita as credenciais da API e executa
+uma conversa de três turnos, consultando o endpoint
+de classificação em cada etapa.
+
+A utilização da API OpenAI pode gerar custos.
+
+### Segurança
+
+- Autenticação JWT preservada.
+- Chaves configuradas por variáveis de ambiente.
+- Credenciais privadas não armazenadas no código.
+- Endpoint de classificação protegido.
+- Ambiente virtual excluído do controle de versão.
+
+### Conclusão
+
+O TP4 demonstrou a integração entre Machine Learning,
+FastAPI, autenticação JWT e agentes de inteligência
+artificial.
+
+Apesar do desempenho limitado do classificador,
+o agente conseguiu interpretar as mensagens e
+fornecer respostas coerentes, utilizando as previsões
+do modelo como informações auxiliares.

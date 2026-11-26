@@ -6,7 +6,8 @@ from fastapi.responses import HTMLResponse
 from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 
-from routes import autenticacao, health, predicao
+
+from routes import autenticacao, health, predicao, classificacao
 from security.rate_limit import limiter
 
 
@@ -164,3 +165,4 @@ def documentacao():
 app.include_router(health.router)
 app.include_router(autenticacao.router)
 app.include_router(predicao.router)
+app.include_router(classificacao.router)

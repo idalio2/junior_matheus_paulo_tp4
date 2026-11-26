@@ -2,13 +2,24 @@
 __pycache__/
 *.py[cod]
 .venv/
+venv/
 .pytest_cache/
 **/__pycache__/
 
 # Jupyter
 .ipynb_checkpoints/
 
-# Ambiente e sistema operacional
+# Variáveis de ambiente e credenciais
 .env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# IntelliJ
 .idea/
+*.iml
+
+# Sistema operacional
 .DS_Store
+__MACOSX/
